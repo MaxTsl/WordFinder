@@ -20,12 +20,12 @@ namespace WordFinder
     }
 
     public delegate void UpdateProgressDeligate(float x);
-    public delegate void ErrorInformerDeligate(string x);
+    public delegate void StatusInformerDeligate(string x);
 
     class TextProcessor
     {
         UpdateProgressDeligate _updateProgress;
-        ErrorInformerDeligate _errorInformer;
+        StatusInformerDeligate _statusInformer;
 
         string _fileName;
         Dictionary<String, WordCount> _dict;
@@ -34,56 +34,87 @@ namespace WordFinder
         CancellationToken _token;
         CancellationTokenSource _tokenSource;
 
-        public TextProcessor(string FileName, UpdateProgressDeligate UpdateProgress, ErrorInformerDeligate ErrorInformer)
+        bool _ready;
+
+        private static TextProcessor instance;
+
+        private TextProcessor() { }
+
+        public static TextProcessor Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new TextProcessor();
+                }
+                return instance;
+            }
+        }
+
+        public void Init(string FileName, UpdateProgressDeligate UpdateProgress, StatusInformerDeligate StatusInformer)
         {
             if (UpdateProgress == null)
                 _updateProgress = s => { };
             else
                 _updateProgress = UpdateProgress;
 
-            if (ErrorInformer == null)
-                _errorInformer = s => { };
+            if (StatusInformer == null)
+                _statusInformer = s => { };
             else
-                _errorInformer = ErrorInformer;
+                _statusInformer = StatusInformer;
 
             _fileName = FileName;
+            _ready = false;
         }
 
-        public bool PreparyDictionary()
+        public void PreparyDictionary()
         {
-            if (_preapering == null)
+            if (_preapering == null || _ready)
             {
-                _preapering = new Task(Processing);
-                _tokenSource = new CancellationTokenSource();
-                _token = _tokenSource.Token;
-                _preapering.Start();
-
-                return true;
+                InitNewTask();
             }
+            else
+            {
+                _statusInformer("Дождитесь завершения текущего процесса");
+            }
+        }
 
-            return false;
+        private void InitNewTask()
+        {
+            _tokenSource = new CancellationTokenSource();
+            _token = _tokenSource.Token;
+            _preapering = new Task(Processing, _token);
+            _preapering.Start();
+            _statusInformer("Начата подготовка словаря");
         }
 
         public void EndPreparing()
         {
             if (_preapering != null && !_preapering.IsCompleted)
             {
-                _tokenSource.Cancel();
-                Thread.Sleep(100);
-                //в любом варианте все завершится без нас, но наверное так будет лучше, только вот ещё надо ловить исключение прерывания выполнения...
-               /*
+                //в любом варианте все завершится без нас, но так будет лучше, только вот ещё надо ловить исключение прерывания выполнения...
+
                 try
                 {
+                    _tokenSource.Cancel();
+                    _updateProgress(0);
+                    _ready = true;
+                    Thread.Sleep(200);
                     _preapering.Wait(_token);
+                    
                 }
-                catch (AggregateException e)
+                catch (Exception ex)
                 {
+                    _statusInformer(ex.Message);
                 }
                 finally
                 {
+                    _preapering = null;
                     _tokenSource.Dispose();
+
                 }
-                */
+
             }
         }
 
@@ -103,8 +134,8 @@ namespace WordFinder
 
                 _dict = new Dictionary<String, WordCount>();
                 float readed = 0;
-                WordCount count = new WordCount(0);
-                while (strReader.EndOfStream != true && !_token.IsCancellationRequested)
+                WordCount count = new WordCount(1);
+                while (strReader.EndOfStream != true)
                 {
                     foreach (var el in strReader.ReadLine().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries))
                     {
@@ -116,19 +147,38 @@ namespace WordFinder
                         readed += el.Length + 1; // разделитель пробел, по этому будет правильнее его учитывать. Не совсем честный подсчет, но и не колайдер делаем
                     }
 
+                    if (_token.IsCancellationRequested)
+                    {
+                        _token.ThrowIfCancellationRequested();
+                    }
+
                     _updateProgress(readed / totalCount);
                 }
 
                 _updateProgress(0);
                 strReader.Close();
+                _statusInformer("Готово");
+                _ready = true;
             }
             catch (Exception ex)
             {
-                _errorInformer(ex.Message);
+                _statusInformer(ex.Message);
                 if (strReader != null)
                     strReader.Close();
             }
             return;
         }
+
+        public int FindWordFrequency(string str)
+        {
+            if (_ready && str != null)
+            {
+                WordCount count = new WordCount(0);
+                if (_dict.TryGetValue(str, out count))
+                    return count.Count;
+            }
+            return -1;
+        }
+
     }
 }

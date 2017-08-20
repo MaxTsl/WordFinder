@@ -12,7 +12,6 @@ namespace WordFinder
 {
     public partial class Form1 : Form
     {
-        TextProcessor _textProcessor;
         public Form1()
         {
             InitializeComponent();
@@ -23,31 +22,52 @@ namespace WordFinder
             if (openFileDlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
 
-                _textProcessor = new TextProcessor(openFileDlg.FileName, UpdateProgres, OnError);
-                _textProcessor.PreparyDictionary();
+                TextProcessor.Instance.Init(openFileDlg.FileName, UpdateProgres, SetStatus);
+                TextProcessor.Instance.PreparyDictionary();
             }
         }
 
         private void UpdateProgres(float percent)
         {
+            //так-как делали "ленивый" подсчет обработанных символов можем получить процент больше 100.
             var val = (int)(percent * 100);
             val = val < 100 ? val : 100;
 
-            if (ProgressBar.InvokeRequired)
-                ProgressBar.Invoke(new Action<int>((s) => ProgressBar.Value = s), val);
+            if (StatusStrip.InvokeRequired)
+                StatusStrip.Invoke(new Action<int>((s) => ProgressBar.Value = s), val);
             else
                 ProgressBar.Value = val;
         }
 
-        private void OnError(string message)
+        private void SetStatus(string message)
         {
-            System.Windows.Forms.MessageBox.Show(message);
+            if (StatusStrip.InvokeRequired)
+                StatusStrip.Invoke(new Action<string>((s) => StatusLabel.Text = s), message);
+            else
+                StatusLabel.Text = message;
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (_textProcessor != null)
-                _textProcessor.EndPreparing();
+            TextProcessor.Instance.EndPreparing();
+        }
+
+        private void btnFind_Click(object sender, EventArgs e)
+        {
+            var count = TextProcessor.Instance.FindWordFrequency(textToFind.Text);
+            if (count > 0)
+            {
+                string strMsg = string.Format(@"Сдщво ""{0}"" встречается {1} раз.", textToFind.Text, count.ToString());
+                MessageBox.Show(strMsg);
+            }
+            else
+                MessageBox.Show(@"Задано неверное слово или процесс постоения словаря ещё не завершился");
+
+        }
+
+        private void btnEnd_Click(object sender, EventArgs e)
+        {
+            TextProcessor.Instance.EndPreparing();
         }
     }
 }

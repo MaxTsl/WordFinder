@@ -29,28 +29,25 @@
         private void InitializeComponent()
         {
             this.btnOpen = new System.Windows.Forms.Button();
-            this.ProgressBar = new System.Windows.Forms.ProgressBar();
             this.textToFind = new System.Windows.Forms.TextBox();
             this.btnFind = new System.Windows.Forms.Button();
             this.openFileDlg = new System.Windows.Forms.OpenFileDialog();
+            this.StatusStrip = new System.Windows.Forms.StatusStrip();
+            this.ProgressBar = new System.Windows.Forms.ToolStripProgressBar();
+            this.StatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.btnEnd = new System.Windows.Forms.Button();
+            this.StatusStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnOpen
             // 
-            this.btnOpen.Location = new System.Drawing.Point(146, 27);
+            this.btnOpen.Location = new System.Drawing.Point(53, 28);
             this.btnOpen.Name = "btnOpen";
             this.btnOpen.Size = new System.Drawing.Size(75, 23);
             this.btnOpen.TabIndex = 0;
             this.btnOpen.Text = "Загрузить";
             this.btnOpen.UseVisualStyleBackColor = true;
             this.btnOpen.Click += new System.EventHandler(this.btnOpen_Click);
-            // 
-            // ProgressBar
-            // 
-            this.ProgressBar.Location = new System.Drawing.Point(22, 73);
-            this.ProgressBar.Name = "ProgressBar";
-            this.ProgressBar.Size = new System.Drawing.Size(331, 23);
-            this.ProgressBar.TabIndex = 1;
             // 
             // textToFind
             // 
@@ -67,23 +64,58 @@
             this.btnFind.TabIndex = 3;
             this.btnFind.Text = "Найти";
             this.btnFind.UseVisualStyleBackColor = true;
+            this.btnFind.Click += new System.EventHandler(this.btnFind_Click);
             // 
             // openFileDlg
             // 
             this.openFileDlg.FileName = "openFileDialog1";
             // 
+            // StatusStrip
+            // 
+            this.StatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ProgressBar,
+            this.StatusLabel});
+            this.StatusStrip.Location = new System.Drawing.Point(0, 229);
+            this.StatusStrip.Name = "StatusStrip";
+            this.StatusStrip.Size = new System.Drawing.Size(365, 22);
+            this.StatusStrip.TabIndex = 4;
+            this.StatusStrip.Text = "statusStrip1";
+            // 
+            // ProgressBar
+            // 
+            this.ProgressBar.Name = "ProgressBar";
+            this.ProgressBar.Size = new System.Drawing.Size(100, 16);
+            // 
+            // StatusLabel
+            // 
+            this.StatusLabel.Name = "StatusLabel";
+            this.StatusLabel.Size = new System.Drawing.Size(0, 17);
+            // 
+            // btnEnd
+            // 
+            this.btnEnd.Location = new System.Drawing.Point(199, 28);
+            this.btnEnd.Name = "btnEnd";
+            this.btnEnd.Size = new System.Drawing.Size(75, 23);
+            this.btnEnd.TabIndex = 5;
+            this.btnEnd.Text = "Прервать";
+            this.btnEnd.UseVisualStyleBackColor = true;
+            this.btnEnd.Click += new System.EventHandler(this.btnEnd_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(365, 177);
+            this.ClientSize = new System.Drawing.Size(365, 251);
+            this.Controls.Add(this.btnEnd);
+            this.Controls.Add(this.StatusStrip);
             this.Controls.Add(this.btnFind);
             this.Controls.Add(this.textToFind);
-            this.Controls.Add(this.ProgressBar);
             this.Controls.Add(this.btnOpen);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Подсчет слов в тексте";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
+            this.StatusStrip.ResumeLayout(false);
+            this.StatusStrip.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -92,10 +124,13 @@
         #endregion
 
         private System.Windows.Forms.Button btnOpen;
-        private System.Windows.Forms.ProgressBar ProgressBar;
         private System.Windows.Forms.TextBox textToFind;
         private System.Windows.Forms.Button btnFind;
         private System.Windows.Forms.OpenFileDialog openFileDlg;
+        private System.Windows.Forms.StatusStrip StatusStrip;
+        private System.Windows.Forms.ToolStripProgressBar ProgressBar;
+        private System.Windows.Forms.ToolStripStatusLabel StatusLabel;
+        private System.Windows.Forms.Button btnEnd;
     }
 }
 
