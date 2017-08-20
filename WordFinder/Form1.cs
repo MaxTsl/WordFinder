@@ -23,10 +23,22 @@ namespace WordFinder
             if (openFileDlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
 
-                _textProcessor = new TextProcessor(openFileDlg.FileName);
+                _textProcessor = new TextProcessor(openFileDlg.FileName, UpdateProgres, OnError);
                 _textProcessor.PreparyDictionary();
-
             }
+        }
+
+        private void UpdateProgres(float percent)
+        {
+            var val = (int)(percent * 100);
+            val = val < 100 ? val : 100;
+
+            ProgressBar.Value = val;
+        }
+
+        private void OnError(string message)
+        {
+            System.Windows.Forms.MessageBox.Show(message);
         }
     }
 }
