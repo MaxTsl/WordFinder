@@ -1,0 +1,9 @@
+C:\Users\Maximchik\Documents\Project\WordFinder\WordFinder\WordFinder\obj\Debug\WordFinder.csprojResolveAssemblyReference.cache
+C:\Users\Maximchik\Documents\Project\WordFinder\WordFinder\WordFinder\obj\Debug\WordFinder.Form1.resources
+C:\Users\Maximchik\Documents\Project\WordFinder\WordFinder\WordFinder\obj\Debug\WordFinder.Properties.Resources.resources
+C:\Users\Maximchik\Documents\Project\WordFinder\WordFinder\WordFinder\obj\Debug\WordFinder.csproj.GenerateResource.Cache
+C:\Users\Maximchik\Documents\Project\WordFinder\WordFinder\WordFinder\bin\Debug\WordFinder.exe.config
+C:\Users\Maximchik\Documents\Project\WordFinder\WordFinder\WordFinder\bin\Debug\WordFinder.exe
+C:\Users\Maximchik\Documents\Project\WordFinder\WordFinder\WordFinder\bin\Debug\WordFinder.pdb
+C:\Users\Maximchik\Documents\Project\WordFinder\WordFinder\WordFinder\obj\Debug\WordFinder.exe
+C:\Users\Maximchik\Documents\Project\WordFinder\WordFinder\WordFinder\obj\Debug\WordFinder.pdb
