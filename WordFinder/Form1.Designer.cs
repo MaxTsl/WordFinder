@@ -76,13 +76,14 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(365, 181);
+            this.ClientSize = new System.Drawing.Size(365, 177);
             this.Controls.Add(this.btnFind);
             this.Controls.Add(this.textToFind);
             this.Controls.Add(this.ProgressBar);
             this.Controls.Add(this.btnOpen);
             this.Name = "Form1";
             this.Text = "Form1";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 

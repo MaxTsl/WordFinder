@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace WordFinder
@@ -29,6 +30,10 @@ namespace WordFinder
         string _fileName;
         Dictionary<String, WordCount> _dict;
 
+        Task _preapering = null;
+        CancellationToken _token;
+        CancellationTokenSource _tokenSource;
+
         public TextProcessor(string FileName, UpdateProgressDeligate UpdateProgress, ErrorInformerDeligate ErrorInformer)
         {
             if (UpdateProgress == null)
@@ -44,7 +49,45 @@ namespace WordFinder
             _fileName = FileName;
         }
 
-        public void PreparyDictionary()
+        public bool PreparyDictionary()
+        {
+            if (_preapering == null)
+            {
+                _preapering = new Task(Processing);
+                _tokenSource = new CancellationTokenSource();
+                _token = _tokenSource.Token;
+                _preapering.Start();
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public void EndPreparing()
+        {
+            if (_preapering != null && !_preapering.IsCompleted)
+            {
+                _tokenSource.Cancel();
+                Thread.Sleep(100);
+                //в любом варианте все завершится без нас, но наверное так будет лучше, только вот ещё надо ловить исключение прерывания выполнения...
+               /*
+                try
+                {
+                    _preapering.Wait(_token);
+                }
+                catch (AggregateException e)
+                {
+                }
+                finally
+                {
+                    _tokenSource.Dispose();
+                }
+                */
+            }
+        }
+
+        public void Processing()
         {
             StreamReader strReader = null;
             try
@@ -61,7 +104,7 @@ namespace WordFinder
                 _dict = new Dictionary<String, WordCount>();
                 float readed = 0;
                 WordCount count = new WordCount(0);
-                while (strReader.EndOfStream != true)
+                while (strReader.EndOfStream != true && !_token.IsCancellationRequested)
                 {
                     foreach (var el in strReader.ReadLine().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries))
                     {
@@ -74,7 +117,6 @@ namespace WordFinder
                     }
 
                     _updateProgress(readed / totalCount);
-
                 }
 
                 _updateProgress(0);

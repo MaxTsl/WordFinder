@@ -33,12 +33,21 @@ namespace WordFinder
             var val = (int)(percent * 100);
             val = val < 100 ? val : 100;
 
-            ProgressBar.Value = val;
+            if (ProgressBar.InvokeRequired)
+                ProgressBar.Invoke(new Action<int>((s) => ProgressBar.Value = s), val);
+            else
+                ProgressBar.Value = val;
         }
 
         private void OnError(string message)
         {
             System.Windows.Forms.MessageBox.Show(message);
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (_textProcessor != null)
+                _textProcessor.EndPreparing();
         }
     }
 }
